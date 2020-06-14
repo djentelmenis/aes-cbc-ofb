@@ -150,7 +150,8 @@ def decrypt_cbc(cipher_text, key):
     return plain_text
 
 
-# Modified from https://github.com/SecureAuthCorp/impacket/blob/master/impacket/crypto.py#L94
+# Modified from
+# https://github.com/SecureAuthCorp/impacket/blob/master/impacket/crypto.py#L94
 # Original author: Alberto Solino (beto@coresecurity.com)
 def gen_cmac(k, m, length):
     const_Zero = bytearray(BLOCK_SIZE)
