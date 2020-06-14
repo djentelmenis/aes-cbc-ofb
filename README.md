@@ -26,3 +26,9 @@ python md1.py d output_encrypted key.hex cbc
 python md1.py e message.txt key.hex OFB
 python md1.py d output_encrypted key.hex OFB
 ```
+
+## Credits
+
+CMAC generation modified from
+https://github.com/SecureAuthCorp/impacket/blob/master/impacket/crypto.py#L94
+Original author: Alberto Solino (beto@coresecurity.com)
