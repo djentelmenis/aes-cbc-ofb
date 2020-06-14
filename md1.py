@@ -231,12 +231,6 @@ def encrypt_block(block, key):
     return cipher.encrypt_block(block)
 
 
-def encrypt_block_16(block, key):
-    cipher = blowfish.Cipher(key)
-    return cipher.encrypt_block(block[:BLOCK_SIZE]) + \
-        cipher.encrypt_block(block[BLOCK_SIZE:])
-
-
 def encrypt_ofb(plain_text, key):
     # Generate IV
     original_iv = secrets.token_bytes(BLOCK_SIZE)
