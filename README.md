@@ -1,6 +1,6 @@
 # CBC-CTS and OFB + CMAC
 
-CBC with CTS and OFB with CMAC encryption algorithms for my CS studies
+AES CBC with CTS and OFB with CMAC encryption algorithms for my CS studies
 
 Sample plaintext `message.txt` and key `key.hex` provided
 
