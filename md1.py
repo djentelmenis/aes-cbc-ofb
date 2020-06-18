@@ -1,17 +1,18 @@
 import blowfish
 import argparse
 import secrets
+import copy
 from struct import pack, unpack
 
 # Commands to encrypt and decrypt something
 #
 # CBC
-# python md1.py e message.txt key.hex cbc
-# python md1.py d output_encrypted key.hex cbc
+# python md1.py e message.txt cbc
+# python md1.py d output_encrypted cbc key_hex
 #
 # OFB
-# python md1.py e message.txt key.hex OFB
-# python md1.py d output_encrypted key.hex OFB
+# python md1.py e message.txt OFB
+# python md1.py d output_encrypted OFB key_hex
 
 ENCRYPT = 'ENCRYPT'
 DECRYPT = 'DECRYPT'
@@ -19,6 +20,7 @@ CBC = 'CBC'
 OFB = 'OFB'
 OUTPUT_ENCRYPTED = 'output_encrypted'
 OUTPUT_DECRYPTED = 'output_decrypted'
+OUTPUT_KEY = 'key_hex'
 BLOCK_SIZE = 8
 
 
@@ -40,6 +42,11 @@ def write_file(data):
 def write_file_binary(data):
     with open(OUTPUT_ENCRYPTED, 'wb') as file:
         file.write(data)
+
+
+def write_key(data):
+    with open(OUTPUT_KEY, 'w') as file:
+        file.write(data.hex())
 
 
 def text_to_byte_array(plainText):
@@ -302,10 +309,22 @@ def decrypt_ofb(cipher_text, key):
     return plain_text
 
 
+def generate_key():
+    key = secrets.token_bytes(8)
+    write_key(key)
+    print(
+        f'\nGenerated key: {copy.deepcopy(key).hex()}\nSaved as {OUTPUT_KEY}')
+    return key
+
+
 def main(dataFile, keyFile, operation='e', mode='cbc'):
     OPERATION = ENCRYPT if operation.lower() == 'e' else DECRYPT
-    KEY = bytes.fromhex(read_file(keyFile))
+
+    if OPERATION == DECRYPT:
+        assert keyFile
+
     MODE = CBC if mode.upper() == CBC else OFB
+    KEY = bytes.fromhex(read_file(keyFile)) if keyFile else generate_key()
 
     read_data = text_to_byte_array(read_file(dataFile)) \
         if OPERATION == ENCRYPT else read_file_binary(dataFile)
@@ -331,14 +350,14 @@ def main(dataFile, keyFile, operation='e', mode='cbc'):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='encrypt/decrypt file with \
-        hex key using CBC with cypher text stealing')
+        hex key using CBC with cypher text stealing or OFB with CMAC')
     parser.add_argument(
         'operation', help='operation: e for encrypt; d for decrypt')
     parser.add_argument('dataFile', help='file to be encrypted/decrypted')
-    parser.add_argument('keyFile', help='file with hex key')
     parser.add_argument('mode', help='chaining mode: cbc or ofb')
+    parser.add_argument('keyFile', nargs='?', help='file with hex key')
     args = parser.parse_args()
 
     # Executes script with variables
     main(operation=args.operation, dataFile=args.dataFile,
-         keyFile=args.keyFile, mode=args.mode)
+         mode=args.mode, keyFile=args.keyFile)
